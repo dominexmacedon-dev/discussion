@@ -1,13 +1,139 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #eef2ff, #f9fafb);
+    }
+
+    .card {
+      background: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      text-align: center;
+      width: 320px;
+    }
+
+    .card h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 25px;
+    }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .google-btn:hover {
+      background: #f9fafb;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .google-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .user-info {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #374151;
+    }
+  </style>
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    <p>Welcome to your first webpage.</p>
+
+  <div class="card">
+    <h1>Welcome</h1>
+    <p>Sign in to continue</p>
+
+    <button class="google-btn" id="loginBtn">
+      <img class="google-icon" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" />
+      Continue with Google
+    </button>
+
+    <div class="user-info" id="userInfo"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyC9tqDdyuIbdgWIBcwwGB7uax0ci_AlrSE",
+        authDomain: "discussions-636e5.firebaseapp.com",
+        databaseURL: "https://discussions-636e5-default-rtdb.firebaseio.com",
+        projectId: "discussions-636e5",
+        storageBucket: "discussions-636e5.firebasestorage.app",
+        messagingSenderId: "3981476762",
+        appId: "1:3981476762:web:b3cb0f505367758a52b023",
+        measurementId: "G-FB1S4XN3GS"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+
+      const auth = firebase.auth();
+      const provider = new firebase.auth.GoogleAuthProvider();
+
+      const loginBtn = document.getElementById("loginBtn");
+      const userInfo = document.getElementById("userInfo");
+
+      loginBtn.addEventListener("click", () => {
+        auth.signInWithPopup(provider)
+          .then(result => {
+            const user = result.user;
+            userInfo.innerHTML = `Logged in as <b>${user.displayName}</b>`;
+          })
+          .catch(error => {
+            console.error(error);
+            alert("Login failed");
+          });
+      });
+
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          userInfo.innerHTML = `Logged in as <b>${user.displayName}</b>`;
+        }
+      });
+
+    });
+  </script>
+
 </body>
 </html>
