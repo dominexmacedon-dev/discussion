@@ -8,10 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
 <style>
 *{
 margin:0;
@@ -149,6 +145,11 @@ cursor:pointer;
 font-weight:600;
 min-width:150px;
 height:46px;
+transition:.2s;
+}
+
+.post-btn:hover{
+opacity:.9;
 }
 
 .message{
@@ -181,6 +182,7 @@ color:#9ca3af;
 font-size:15px;
 line-height:1.7;
 color:#111827;
+word-break:break-word;
 }
 
 .actions{
@@ -192,15 +194,18 @@ color:#4b5563;
 flex-wrap:wrap;
 }
 
-.actions span{
+.actions button{
+border:none;
+background:none;
+cursor:pointer;
 display:flex;
 align-items:center;
 gap:6px;
-cursor:pointer;
-transition:.2s;
+font-size:14px;
+color:#4b5563;
 }
 
-.actions span:hover{
+.actions button:hover{
 color:#4f46e5;
 }
 
@@ -216,8 +221,6 @@ padding:9px 14px;
 border-radius:10px;
 cursor:pointer;
 margin-top:10px;
-height:42px;
-min-width:90px;
 }
 
 .reply{
@@ -234,11 +237,6 @@ font-size:12px;
 font-weight:600;
 color:#4b5563;
 margin-bottom:6px;
-}
-
-.loading{
-opacity:.7;
-pointer-events:none;
 }
 
 .spinner{
@@ -289,7 +287,7 @@ gap:15px;
  Full Time
 </div>
 
-<button class="logout-btn" onclick="logout()">
+<button class="logout-btn" id="logoutBtn">
 <i class="fa-solid fa-right-from-bracket"></i>
  Logout
 </button>
@@ -308,7 +306,7 @@ gap:15px;
 </div>
 
 <div class="team">
-<img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/FC_Bayern_München_logo_%282017%29.svg">
+<img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg">
 <h2>Bayern</h2>
 </div>
 
@@ -348,7 +346,7 @@ Fan Discussion
 
 <textarea id="messageInput" rows="4" placeholder="Share your thoughts about the match..."></textarea>
 
-<button class="post-btn" onclick="postMessage()">
+<button class="post-btn" id="postBtn">
 <i class="fa-solid fa-paper-plane"></i>
  Post Comment
 </button>
@@ -360,6 +358,10 @@ Fan Discussion
 </div>
 
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
 
@@ -381,43 +383,48 @@ const db = firebase.database();
 
 let currentUser = null;
 
-auth.onAuthStateChanged(user=>{
+const postBtn = document.getElementById("postBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", logout);
+postBtn.addEventListener("click", postMessage);
+
+auth.onAuthStateChanged(user => {
 
 if(!user){
 
-window.location.href="index.html";
+window.location.href = "index.html";
 
 }else{
 
-currentUser=user;
-
+currentUser = user;
 loadMessages();
 
 }
+
 });
 
 function logout(){
 
-auth.signOut().then(()=>{
+auth.signOut().then(() => {
 
-window.location.href="index.html";
+window.location.href = "index.html";
 
 });
+
 }
 
 async function postMessage(){
 
-const input=document.getElementById("messageInput");
+const input = document.getElementById("messageInput");
 
-const button=document.querySelector(".post-btn");
-
-const text=input.value.trim();
+const text = input.value.trim();
 
 if(!text)return;
 
-button.classList.add("loading");
+postBtn.disabled = true;
 
-button.innerHTML=`<span class="spinner"></span>`;
+postBtn.innerHTML = `<span class="spinner"></span>`;
 
 try{
 
@@ -429,59 +436,54 @@ dislikes:0,
 timestamp:Date.now()
 });
 
-input.value="";
-
-button.innerHTML=`
-<i class="fa-solid fa-paper-plane"></i>
- Post Comment
-`;
-
-button.classList.remove("loading");
+input.value = "";
 
 }catch(error){
-
-button.innerHTML=`
-<i class="fa-solid fa-paper-plane"></i>
- Post Comment
-`;
-
-button.classList.remove("loading");
 
 console.error(error);
 
 }
+
+postBtn.disabled = false;
+
+postBtn.innerHTML = `
+<i class="fa-solid fa-paper-plane"></i>
+ Post Comment
+`;
+
 }
 
 function timeAgo(timestamp){
 
-const seconds=Math.floor((Date.now()-timestamp)/1000);
+const seconds = Math.floor((Date.now() - timestamp) / 1000);
 
-if(seconds<60)return "Just now";
+if(seconds < 60)return "Just now";
 
-const minutes=Math.floor(seconds/60);
+const minutes = Math.floor(seconds / 60);
 
-if(minutes<60)return minutes+" min ago";
+if(minutes < 60)return minutes + " min ago";
 
-const hours=Math.floor(minutes/60);
+const hours = Math.floor(minutes / 60);
 
-if(hours<24)return hours+" hr ago";
+if(hours < 24)return hours + " hr ago";
 
-const days=Math.floor(hours/24);
+const days = Math.floor(hours / 24);
 
-return days+" day ago";
+return days + " day ago";
+
 }
 
 function loadMessages(){
 
-db.ref("messages").on("value",snapshot=>{
+db.ref("messages").on("value", snapshot => {
 
-const container=document.getElementById("messages");
+const container = document.getElementById("messages");
 
-container.innerHTML="";
+container.innerHTML = "";
 
-const data=[];
+const data = [];
 
-snapshot.forEach(child=>{
+snapshot.forEach(child => {
 
 data.unshift({
 id:child.key,
@@ -490,13 +492,13 @@ id:child.key,
 
 });
 
-data.forEach(msg=>{
+data.forEach(msg => {
 
-const div=document.createElement("div");
+const div = document.createElement("div");
 
-div.className="message";
+div.className = "message";
 
-div.innerHTML=`
+div.innerHTML = `
 
 <div class="message-top">
 
@@ -516,20 +518,20 @@ ${msg.text}
 
 <div class="actions">
 
-<span onclick="likeMessage('${msg.id}')">
+<button onclick="likeMessage('${msg.id}')">
 <i class="fa-regular fa-thumbs-up"></i>
-${msg.likes||0}
-</span>
+${msg.likes || 0}
+</button>
 
-<span onclick="dislikeMessage('${msg.id}')">
+<button onclick="dislikeMessage('${msg.id}')">
 <i class="fa-regular fa-thumbs-down"></i>
-${msg.dislikes||0}
-</span>
+${msg.dislikes || 0}
+</button>
 
-<span onclick="showReplyBox('${msg.id}')">
+<button onclick="showReplyBox('${msg.id}')">
 <i class="fa-solid fa-reply"></i>
 Reply
-</span>
+</button>
 
 </div>
 
@@ -544,28 +546,28 @@ container.appendChild(div);
 loadReplies(msg.id);
 
 });
+
 });
+
 }
 
 function likeMessage(id){
 
-const ref=db.ref("messages/"+id+"/likes");
+db.ref("messages/" + id + "/likes").transaction(v => (v || 0) + 1);
 
-ref.transaction(v=>(v||0)+1);
 }
 
 function dislikeMessage(id){
 
-const ref=db.ref("messages/"+id+"/dislikes");
+db.ref("messages/" + id + "/dislikes").transaction(v => (v || 0) + 1);
 
-ref.transaction(v=>(v||0)+1);
 }
 
 function showReplyBox(id){
 
-const box=document.getElementById("replyBox-"+id);
+const box = document.getElementById("replyBox-" + id);
 
-box.innerHTML=`
+box.innerHTML = `
 
 <textarea id="replyInput-${id}" rows="2" placeholder="Write a reply..."></textarea>
 
@@ -574,64 +576,62 @@ Reply
 </button>
 
 `;
+
 }
 
 async function postReply(id){
 
-const input=document.getElementById("replyInput-"+id);
+const input = document.getElementById("replyInput-" + id);
 
-const text=input.value.trim();
+const text = input.value.trim();
 
 if(!text)return;
 
-const button=document.querySelector("#replyBox-"+id+" .reply-btn");
+const button = document.querySelector("#replyBox-" + id + " .reply-btn");
 
-button.innerHTML=`<span class="spinner"></span>`;
+button.disabled = true;
 
-button.classList.add("loading");
+button.innerHTML = `<span class="spinner"></span>`;
 
 try{
 
-await db.ref("messages/"+id+"/replies").push({
+await db.ref("messages/" + id + "/replies").push({
 text:text,
 email:currentUser.email,
 timestamp:Date.now()
 });
 
-input.value="";
-
-button.innerHTML="Reply";
-
-button.classList.remove("loading");
+input.value = "";
 
 }catch(error){
-
-button.innerHTML="Reply";
-
-button.classList.remove("loading");
 
 console.error(error);
 
 }
+
+button.disabled = false;
+
+button.innerHTML = "Reply";
+
 }
 
 function loadReplies(id){
 
-db.ref("messages/"+id+"/replies").on("value",snapshot=>{
+db.ref("messages/" + id + "/replies").on("value", snapshot => {
 
-const container=document.getElementById("replies-"+id);
+const container = document.getElementById("replies-" + id);
 
-container.innerHTML="";
+container.innerHTML = "";
 
-snapshot.forEach(reply=>{
+snapshot.forEach(reply => {
 
-const data=reply.val();
+const data = reply.val();
 
-const div=document.createElement("div");
+const div = document.createElement("div");
 
-div.className="reply";
+div.className = "reply";
 
-div.innerHTML=`
+div.innerHTML = `
 
 <div class="reply-email">
 ${data.email}
@@ -646,7 +646,9 @@ ${data.text}
 container.appendChild(div);
 
 });
+
 });
+
 }
 
 </script>
