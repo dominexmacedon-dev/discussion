@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Football Hub Chat</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <style>
 
@@ -13,98 +14,200 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:'Inter',sans-serif;
+font-family:Inter;
 }
 
 body{
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-background:linear-gradient(135deg,#eef2ff,#f8fafc);
-padding:20px;
-}
-
-.card{
-width:100%;
-max-width:420px;
-background:#fff;
-border-radius:24px;
-padding:30px;
-box-shadow:0 15px 40px rgba(0,0,0,.08);
-text-align:center;
-}
-
-.profile{
-width:110px;
-height:110px;
-border-radius:50%;
-object-fit:cover;
-border:4px solid #4f46e5;
-margin:0 auto 20px auto;
 background:#f3f4f6;
+height:100vh;
+display:flex;
+flex-direction:column;
 }
 
-h2{
-font-size:24px;
-margin-bottom:6px;
-color:#111827;
-}
-
-p{
-font-size:14px;
-color:#6b7280;
-margin-bottom:10px;
-word-break:break-word;
-}
-
-.label{
-font-size:12px;
-color:#9ca3af;
-margin-top:14px;
-text-transform:uppercase;
-letter-spacing:.5px;
-}
-
-.value{
-font-size:15px;
-font-weight:600;
-color:#111827;
-margin-top:4px;
-}
-
-.club{
-margin-top:18px;
-padding:10px 14px;
-background:#eef2ff;
-border-radius:12px;
-display:inline-block;
-font-weight:600;
-color:#4f46e5;
-}
-
-.logout-btn{
-margin-top:25px;
-width:100%;
-padding:14px;
-border:none;
-border-radius:14px;
+.header{
 background:#111827;
 color:#fff;
-font-size:15px;
-font-weight:600;
+padding:14px 16px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+.user{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.user img{
+width:40px;
+height:40px;
+border-radius:50%;
+object-fit:cover;
+border:2px solid #4f46e5;
+}
+
+.user-info{
+display:flex;
+flex-direction:column;
+}
+
+.user-info small{
+opacity:.7;
+font-size:12px;
+}
+
+.club-tag{
+font-size:12px;
+background:#4f46e5;
+padding:2px 8px;
+border-radius:10px;
+margin-left:6px;
+}
+
+.logout{
+background:#ef4444;
+border:none;
+color:#fff;
+padding:8px 12px;
+border-radius:10px;
 cursor:pointer;
-transition:.2s;
 }
 
-.logout-btn:hover{
-transform:translateY(-2px);
-box-shadow:0 10px 20px rgba(0,0,0,.15);
+.container{
+display:flex;
+flex:1;
+overflow:hidden;
 }
 
-.loading{
-font-size:14px;
-color:#6b7280;
+.sidebar{
+width:260px;
+background:#fff;
+border-right:1px solid #e5e7eb;
+padding:10px;
+overflow-y:auto;
+}
+
+.room{
+padding:12px;
+border-radius:10px;
+cursor:pointer;
+margin-bottom:8px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.room.active{
+background:#eef2ff;
+color:#4f46e5;
+font-weight:600;
+}
+
+.chat{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+.messages{
+flex:1;
+padding:16px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.msg{
+max-width:70%;
+padding:10px 12px;
+border-radius:12px;
+background:#fff;
+box-shadow:0 2px 6px rgba(0,0,0,.05);
+position:relative;
+cursor:pointer;
+}
+
+.msg.me{
+align-self:flex-end;
+background:#4f46e5;
+color:#fff;
+}
+
+.meta{
+font-size:11px;
+opacity:.7;
+margin-top:4px;
+display:flex;
+justify-content:space-between;
+}
+
+.msg-header{
+display:flex;
+align-items:center;
+gap:8px;
+margin-bottom:4px;
+}
+
+.msg-header img{
+width:22px;
+height:22px;
+border-radius:50%;
+}
+
+.input-box{
+display:flex;
+padding:12px;
+background:#fff;
+border-top:1px solid #e5e7eb;
+gap:10px;
+}
+
+input{
+flex:1;
+padding:10px;
+border-radius:10px;
+border:1px solid #e5e7eb;
+outline:none;
+}
+
+button{
+background:#111827;
+color:#fff;
+border:none;
+padding:10px 14px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.seen{
+font-size:10px;
+opacity:.8;
+margin-left:5px;
+}
+
+.popup{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#fff;
+padding:16px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,.2);
+display:none;
+min-width:220px;
+}
+
+.popup h4{
+margin-bottom:10px;
+}
+
+@media(max-width:768px){
+.sidebar{
+display:none;
+}
 }
 
 </style>
@@ -112,19 +215,58 @@ color:#6b7280;
 
 <body>
 
-<div class="card">
+<div class="header">
 
-<img id="profilePic" class="profile" src="https://via.placeholder.com/150" />
+<div class="user">
+<img id="profilePic">
+<div class="user-info">
+<div>
+<span id="name"></span>
+<span class="club-tag" id="clubTag"></span>
+</div>
+<small id="email"></small>
+</div>
+</div>
 
-<h2 id="name">Loading...</h2>
+<div>
+<i class="fa-solid fa-users"></i>
+<span id="onlineCount">0</span>
+</div>
 
-<p id="email">Loading...</p>
+<button class="logout" id="logoutBtn">Logout</button>
 
-<div class="label">Favorite Club</div>
-<div class="club" id="club">---</div>
+</div>
 
-<button class="logout-btn" id="logoutBtn">Logout</button>
+<div class="container">
 
+<div class="sidebar">
+
+<div class="room active" onclick="switchRoom('general')">
+General Chat
+</div>
+
+<div class="room" onclick="switchRoom('team')">
+Team Chat
+</div>
+
+</div>
+
+<div class="chat">
+
+<div class="messages" id="messages"></div>
+
+<div class="input-box">
+<input id="msgInput" placeholder="Type message...">
+<button onclick="sendMsg()"><i class="fa fa-paper-plane"></i></button>
+</div>
+
+</div>
+
+</div>
+
+<div class="popup" id="popup">
+<h4>Seen By</h4>
+<div id="seenList"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -132,67 +274,156 @@ color:#6b7280;
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-const firebaseConfig = {
-apiKey: "AIzaSyC9tqDdyuIbdgWIBcwwGB7uax0ci_AlrSE",
-authDomain: "discussions-636e5.firebaseapp.com",
-databaseURL: "https://discussions-636e5-default-rtdb.firebaseio.com",
-projectId: "discussions-636e5",
-storageBucket: "discussions-636e5.firebasestorage.app",
-messagingSenderId: "3981476762",
-appId: "1:3981476762:web:b3cb0f505367758a52b023",
-measurementId: "G-FB1S4XN3GS"
-};
 
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp({
+apiKey:"AIzaSyC9tqDdyuIbdgWIBcwwGB7uax0ci_AlrSE",
+authDomain:"discussions-636e5.firebaseapp.com",
+databaseURL:"https://discussions-636e5-default-rtdb.firebaseio.com",
+projectId:"discussions-636e5",
+storageBucket:"discussions-636e5.firebasestorage.app",
+messagingSenderId:"3981476762",
+appId:"1:3981476762:web:b3cb0f505367758a52b023"
+});
 
 const auth = firebase.auth();
 const db = firebase.database();
-const profilePic = document.getElementById("profilePic");
-const nameEl = document.getElementById("name");
-const emailEl = document.getElementById("email");
-const clubEl = document.getElementById("club");
-const logoutBtn = document.getElementById("logoutBtn");
 
-auth.onAuthStateChanged(async (user) => {
+let currentUser = null;
+let currentRoom = "general";
+let userData = {};
 
-if (!user) {
-window.location.href = "index.html";
+const messagesDiv = document.getElementById("messages");
+
+auth.onAuthStateChanged(async user => {
+
+if(!user){
+location.href="index.html";
 return;
 }
 
-try {
+currentUser = user;
 
-const snapshot = await db.ref("users-register/" + user.uid).once("value");
-const data = snapshot.val();
+const snap = await db.ref("users-register/"+user.uid).once("value");
+userData = snap.val();
 
-if (data) {
+document.getElementById("name").innerText = userData.name;
+document.getElementById("email").innerText = userData.email;
+document.getElementById("clubTag").innerText = userData.favoriteTeam;
+document.getElementById("profilePic").src = userData.photoURL;
 
-nameEl.textContent = data.name || "No Name";
-emailEl.textContent = data.email || user.email;
-clubEl.textContent = data.favoriteTeam || "No Club Selected";
-profilePic.src = data.photoURL || user.photoURL || "https://via.placeholder.com/150";
-
-} else {
-
-nameEl.textContent = user.displayName || "No Name";
-emailEl.textContent = user.email;
-clubEl.textContent = "No Club Selected";
-profilePic.src = user.photoURL || "https://via.placeholder.com/150";
-
-}
-
-} catch (err) {
-console.error(err);
-}
+listenMessages();
 
 });
 
-logoutBtn.addEventListener("click", async () => {
+function roomPath(){
+return currentRoom==="general"
+? "chats/general/messages"
+: "chats/team/"+userData.favoriteTeam+"/messages";
+}
 
+function switchRoom(type){
+
+currentRoom = type;
+
+document.querySelectorAll(".room").forEach(r=>r.classList.remove("active"));
+event.target.classList.add("active");
+
+messagesDiv.innerHTML="";
+listenMessages();
+
+}
+
+function listenMessages(){
+
+db.ref(roomPath()).off();
+
+db.ref(roomPath()).on("child_added", snap=>{
+
+const msg = snap.val();
+renderMessage(msg, snap.key);
+
+});
+
+}
+
+function renderMessage(msg,key){
+
+const div = document.createElement("div");
+div.className="msg "+(msg.uid===currentUser.uid?"me":"");
+
+div.onclick=()=>showSeen(msg);
+
+div.innerHTML=`
+<div class="msg-header">
+<img src="${msg.photo}">
+<strong>${msg.name}</strong>
+</div>
+<div>${msg.text}</div>
+<div class="meta">
+<span>${msg.time}</span>
+<span class="seen">${msg.seenBy?msg.seenBy.length:0} seen</span>
+</div>
+`;
+
+messagesDiv.appendChild(div);
+messagesDiv.scrollTop=messagesDiv.scrollHeight;
+
+markSeen(key,msg);
+
+}
+
+function sendMsg(){
+
+const input=document.getElementById("msgInput");
+
+if(!input.value.trim())return;
+
+const msg={
+uid:currentUser.uid,
+name:userData.name+(currentRoom==="general"?" ("+userData.favoriteTeam+")":""),
+photo:userData.photoURL,
+text:input.value,
+time:new Date().toLocaleTimeString(),
+seenBy:[currentUser.uid]
+};
+
+db.ref(roomPath()).push(msg);
+
+input.value="";
+
+}
+
+function markSeen(key,msg){
+
+if(!msg.seenBy)msg.seenBy=[];
+
+if(!msg.seenBy.includes(currentUser.uid)){
+
+msg.seenBy.push(currentUser.uid);
+
+db.ref(roomPath()+"/"+key).update({seenBy:msg.seenBy});
+
+}
+
+}
+
+function showSeen(msg){
+
+document.getElementById("popup").style.display="block";
+
+document.getElementById("seenList").innerHTML=
+(msg.seenBy||[]).map(u=>`<div>${u}</div>`).join("");
+
+setTimeout(()=>{
+document.getElementById("popup").style.display="none";
+},3000);
+
+}
+
+document.getElementById("logoutBtn").onclick=async()=>{
 await auth.signOut();
-window.location.href = "index.html";
-
-});
+location.href="index.html";
+};
 
 </script>
 
