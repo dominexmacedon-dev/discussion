@@ -28,93 +28,44 @@ flex-direction:column;
 .header{
 background:#111827;
 color:#fff;
-padding:12px 14px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-flex-wrap:wrap;
-gap:10px;
-}
-
-.user{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.user img{
-width:40px;
-height:40px;
-border-radius:50%;
-object-fit:cover;
-border:2px solid #4f46e5;
-}
-
-.user-info small{
-font-size:12px;
-opacity:.7;
-}
-
-.club-tag{
-background:#4f46e5;
-padding:2px 8px;
-border-radius:10px;
-font-size:12px;
-margin-left:6px;
-}
-
-/* LAYOUT */
-.container{
-flex:1;
-display:flex;
-overflow:hidden;
-}
-
-/* SIDEBAR */
-.sidebar{
-width:280px;
-background:#fff;
-border-right:1px solid #e5e7eb;
 padding:10px;
-overflow:auto;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+flex-wrap:wrap;
 }
 
-.room{
-padding:12px;
+.left{
+display:flex;
+align-items:center;
+gap:10px;
+cursor:pointer;
+}
+
+.left img{
+width:38px;
+height:38px;
+border-radius:50%;
+border:2px solid #4f46e5;
+object-fit:cover;
+}
+
+.tabs{
+display:flex;
+gap:8px;
+}
+
+.tab{
+padding:6px 10px;
 border-radius:10px;
 cursor:pointer;
-margin-bottom:8px;
-display:flex;
-justify-content:space-between;
+font-size:13px;
+background:rgba(255,255,255,0.1);
 }
 
-.room.active{
-background:#eef2ff;
-color:#4f46e5;
-font-weight:600;
-}
-
-/* PLAYERS LIST */
-.players{
-margin-top:15px;
-border-top:1px solid #eee;
-padding-top:10px;
-}
-
-.player{
-display:flex;
-gap:10px;
-align-items:center;
-padding:8px;
-border-radius:10px;
-}
-
-.player img{
-width:40px;
-height:40px;
-border-radius:50%;
-object-fit:cover;
-background:#eee;
+.tab.active{
+background:#4f46e5;
 }
 
 /* CHAT */
@@ -126,13 +77,14 @@ flex-direction:column;
 
 .messages{
 flex:1;
-padding:12px;
+padding:10px;
 overflow:auto;
 display:flex;
 flex-direction:column;
 gap:10px;
 }
 
+/* MESSAGE */
 .msg{
 max-width:75%;
 background:#fff;
@@ -140,6 +92,7 @@ padding:10px;
 border-radius:12px;
 box-shadow:0 2px 6px rgba(0,0,0,.05);
 cursor:pointer;
+position:relative;
 }
 
 .msg.me{
@@ -151,13 +104,13 @@ color:#fff;
 .msg-header{
 display:flex;
 align-items:center;
-gap:8px;
+gap:6px;
 margin-bottom:5px;
 }
 
 .msg-header img{
-width:22px;
-height:22px;
+width:20px;
+height:20px;
 border-radius:50%;
 }
 
@@ -181,7 +134,7 @@ border-top:1px solid #e5e7eb;
 input{
 flex:1;
 padding:10px;
-border:1px solid #e5e7eb;
+border:1px solid #ddd;
 border-radius:10px;
 outline:none;
 }
@@ -195,36 +148,55 @@ border-radius:10px;
 cursor:pointer;
 }
 
-/* REACTIONS */
-.reactions{
-display:flex;
+/* REACTIONS POPUP */
+.react-box{
+position:absolute;
+bottom:-40px;
+left:10px;
+background:#fff;
+padding:5px 8px;
+border-radius:12px;
+display:none;
 gap:8px;
-margin-top:6px;
-font-size:16px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
 }
 
-.react{
+.react-box span{
 cursor:pointer;
+font-size:18px;
+}
+
+/* PROFILE MODAL */
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.5);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modal-content{
+background:#fff;
+padding:20px;
+border-radius:12px;
+width:300px;
+text-align:center;
+}
+
+.modal-content img{
+width:80px;
+height:80px;
+border-radius:50%;
+margin-bottom:10px;
 }
 
 /* MOBILE */
 @media(max-width:768px){
-.sidebar{
-display:none;
-}
-}
-
-/* POPUP */
-.popup{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:#fff;
-padding:15px;
-border-radius:12px;
-display:none;
-box-shadow:0 10px 30px rgba(0,0,0,.2);
+.tab{font-size:12px;}
 }
 
 </style>
@@ -232,37 +204,24 @@ box-shadow:0 10px 30px rgba(0,0,0,.2);
 
 <body>
 
+<!-- HEADER -->
 <div class="header">
 
-<div class="user">
+<div class="left" onclick="openProfile()">
 <img id="profilePic">
 <div>
-<div>
-<span id="name"></span>
-<span class="club-tag" id="clubTag"></span>
-</div>
-<small id="email"></small>
+<div id="name"></div>
+<small id="email" style="opacity:.7"></small>
 </div>
 </div>
 
-<div><i class="fa fa-users"></i> <span id="online">0</span></div>
-
-<button onclick="logout()">Logout</button>
-
+<div class="tabs">
+<div class="tab active" onclick="switchTab('general',this)">General</div>
+<div class="tab" onclick="switchTab('team',this)">Team</div>
+<div class="tab" onclick="switchTab('players',this)">Players</div>
 </div>
 
-<div class="container">
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-
-<div class="room active" onclick="switchRoom(event,'general')">General</div>
-<div class="room" onclick="switchRoom(event,'team')">Team Chat</div>
-
-<div class="players">
-<h4>Players</h4>
-<div id="playersList"></div>
-</div>
+<button onclick="logout()"><i class="fa fa-right-from-bracket"></i></button>
 
 </div>
 
@@ -278,9 +237,16 @@ box-shadow:0 10px 30px rgba(0,0,0,.2);
 
 </div>
 
+<!-- PROFILE MODAL -->
+<div class="modal" id="modal">
+<div class="modal-content">
+<img id="mPic">
+<h3 id="mName"></h3>
+<p id="mEmail"></p>
+<p id="mClub"></p>
+<button onclick="closeModal()">Close</button>
 </div>
-
-<div class="popup" id="popup"></div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -289,20 +255,15 @@ box-shadow:0 10px 30px rgba(0,0,0,.2);
 <script>
 
 firebase.initializeApp({
-apiKey: "AIzaSyC9tqDdyuIbdgWIBcwwGB7uax0ci_AlrSE",
-authDomain: "discussions-636e5.firebaseapp.com",
-databaseURL: "https://discussions-636e5-default-rtdb.firebaseio.com",
-projectId: "discussions-636e5",
-storageBucket: "discussions-636e5.firebasestorage.app",
-messagingSenderId: "3981476762",
-appId: "1:3981476762:web:b3cb0f505367758a52b023",
-measurementId: "G-FB1S4XN3GS"
+apiKey:"AIzaSyC9tqDdyuIbdgWIBcwwGB7uax0ci_AlrSE",
+authDomain:"discussions-636e5.firebaseapp.com",
+databaseURL:"https://discussions-636e5-default-rtdb.firebaseio.com"
 });
 
-const auth = firebase.auth();
-const db = firebase.database();
+const auth=firebase.auth();
+const db=firebase.database();
 
-let user, data, room="general";
+let user,data,tab="general";
 
 const msgBox=document.getElementById("messages");
 
@@ -312,33 +273,36 @@ if(!u)location="index.html";
 
 user=u;
 
-let snap=await db.ref("users-register/"+u.uid).once("value");
-data=snap.val();
+let s=await db.ref("users-register/"+u.uid).once("value");
+data=s.val();
 
 document.getElementById("name").innerText=data.name;
 document.getElementById("email").innerText=data.email;
-document.getElementById("clubTag").innerText=data.favoriteTeam;
 document.getElementById("profilePic").src=data.photoURL;
 
-loadPlayers(data.favoriteTeam);
 listen();
 
 });
 
+/* ROOM */
 function roomPath(){
-return room==="general"
-?"chats/general/messages"
-:"chats/team/"+data.favoriteTeam+"/messages";
+if(tab==="general")return "chats/general/messages";
+if(tab==="team")return "chats/team/"+data.favoriteTeam+"/messages";
+return "players";
 }
 
-function switchRoom(e,r){
-room=r;
-document.querySelectorAll(".room").forEach(x=>x.classList.remove("active"));
-e.target.classList.add("active");
+/* TAB SWITCH */
+function switchTab(t,el){
+tab=t;
+document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+el.classList.add("active");
 msgBox.innerHTML="";
-listen();
+
+if(tab==="players")loadPlayers();
+else listen();
 }
 
+/* LISTEN */
 function listen(){
 db.ref(roomPath()).off();
 db.ref(roomPath()).on("child_added",s=>{
@@ -346,10 +310,20 @@ render(s.val(),s.key);
 });
 }
 
+/* MESSAGE */
 function render(m,k){
 
 let div=document.createElement("div");
 div.className="msg "+(m.uid===user.uid?"me":"");
+
+let reactBox=document.createElement("div");
+reactBox.className="react-box";
+reactBox.innerHTML=`
+<span onclick="react('${k}','❤️')">❤️</span>
+<span onclick="react('${k}','👍')">👍</span>
+<span onclick="react('${k}','😂')">😂</span>
+<span onclick="react('${k}','😡')">😡</span>
+`;
 
 div.innerHTML=`
 <div class="msg-header">
@@ -357,24 +331,26 @@ div.innerHTML=`
 <strong>${m.name}</strong>
 </div>
 <div>${m.text}</div>
-
-<div class="reactions">
-<span class="react" onclick="react('${k}','❤️')">❤️</span>
-<span class="react" onclick="react('${k}','👍')">👍</span>
-<span class="react" onclick="react('${k}','😂')">😂</span>
-<span class="react" onclick="react('${k}','😡')">😡</span>
-</div>
-
 <div class="meta">
 <span>${m.time}</span>
 <span>${(m.reactions||[]).length}</span>
 </div>
 `;
 
+div.appendChild(reactBox);
+
+/* SHOW REACTIONS ONLY ON HOLD/TAP */
+div.addEventListener("click",()=>{
+reactBox.style.display=
+reactBox.style.display==="flex"?"none":"flex";
+});
+
 msgBox.appendChild(div);
 msgBox.scrollTop=msgBox.scrollHeight;
+
 }
 
+/* SEND */
 function sendMsg(){
 
 let text=document.getElementById("msgInput").value;
@@ -390,45 +366,57 @@ reactions:[]
 });
 
 document.getElementById("msgInput").value="";
+
 }
 
-function react(id,type){
+/* REACTION */
+function react(id,r){
 
 db.ref(roomPath()+"/"+id).once("value",s=>{
-
 let m=s.val();
 m.reactions=m.reactions||[];
-m.reactions.push(type);
-
+m.reactions.push(r);
 db.ref(roomPath()+"/"+id).update({reactions:m.reactions});
-
 });
 
 }
 
-/* Wikipedia Players */
-async function loadPlayers(team){
+/* WIKIPEDIA PLAYERS */
+async function loadPlayers(){
 
-let url=`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(team+" football players")}`;
+msgBox.innerHTML="Loading players...";
 
-try{
+let url=`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(data.favoriteTeam+" squad")}`;
+
 let res=await fetch(url);
 let d=await res.json();
 
-document.getElementById("playersList").innerHTML=
-`
-<div class="player">
-<img src="${d.thumbnail?.source || ''}">
-<div>${d.title}</div>
+msgBox.innerHTML=`
+<div style="text-align:center">
+<img src="${d.thumbnail?.source||''}" style="width:100px;border-radius:50%">
+<h3>${d.title}</h3>
+<p>${d.extract||''}</p>
 </div>
 `;
 
-}catch(e){
-console.log(e);
 }
+
+/* PROFILE */
+function openProfile(){
+
+document.getElementById("modal").style.display="flex";
+document.getElementById("mPic").src=data.photoURL;
+document.getElementById("mName").innerText=data.name;
+document.getElementById("mEmail").innerText=data.email;
+document.getElementById("mClub").innerText=data.favoriteTeam;
 
 }
 
+function closeModal(){
+document.getElementById("modal").style.display="none";
+}
+
+/* LOGOUT */
 function logout(){
 auth.signOut();
 location="index.html";
