@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Football Hub Chat</title>
 
@@ -24,13 +24,16 @@ display:flex;
 flex-direction:column;
 }
 
+/* HEADER */
 .header{
 background:#111827;
 color:#fff;
-padding:14px 16px;
+padding:12px 14px;
 display:flex;
-align-items:center;
 justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
 }
 
 .user{
@@ -47,45 +50,33 @@ object-fit:cover;
 border:2px solid #4f46e5;
 }
 
-.user-info{
-display:flex;
-flex-direction:column;
-}
-
 .user-info small{
-opacity:.7;
 font-size:12px;
+opacity:.7;
 }
 
 .club-tag{
-font-size:12px;
 background:#4f46e5;
 padding:2px 8px;
 border-radius:10px;
+font-size:12px;
 margin-left:6px;
 }
 
-.logout{
-background:#ef4444;
-border:none;
-color:#fff;
-padding:8px 12px;
-border-radius:10px;
-cursor:pointer;
-}
-
+/* LAYOUT */
 .container{
-display:flex;
 flex:1;
+display:flex;
 overflow:hidden;
 }
 
+/* SIDEBAR */
 .sidebar{
-width:260px;
+width:280px;
 background:#fff;
 border-right:1px solid #e5e7eb;
 padding:10px;
-overflow-y:auto;
+overflow:auto;
 }
 
 .room{
@@ -95,7 +86,6 @@ cursor:pointer;
 margin-bottom:8px;
 display:flex;
 justify-content:space-between;
-align-items:center;
 }
 
 .room.active{
@@ -104,6 +94,30 @@ color:#4f46e5;
 font-weight:600;
 }
 
+/* PLAYERS LIST */
+.players{
+margin-top:15px;
+border-top:1px solid #eee;
+padding-top:10px;
+}
+
+.player{
+display:flex;
+gap:10px;
+align-items:center;
+padding:8px;
+border-radius:10px;
+}
+
+.player img{
+width:40px;
+height:40px;
+border-radius:50%;
+object-fit:cover;
+background:#eee;
+}
+
+/* CHAT */
 .chat{
 flex:1;
 display:flex;
@@ -112,20 +126,19 @@ flex-direction:column;
 
 .messages{
 flex:1;
-padding:16px;
-overflow-y:auto;
+padding:12px;
+overflow:auto;
 display:flex;
 flex-direction:column;
 gap:10px;
 }
 
 .msg{
-max-width:70%;
-padding:10px 12px;
-border-radius:12px;
+max-width:75%;
 background:#fff;
+padding:10px;
+border-radius:12px;
 box-shadow:0 2px 6px rgba(0,0,0,.05);
-position:relative;
 cursor:pointer;
 }
 
@@ -135,19 +148,11 @@ background:#4f46e5;
 color:#fff;
 }
 
-.meta{
-font-size:11px;
-opacity:.7;
-margin-top:4px;
-display:flex;
-justify-content:space-between;
-}
-
 .msg-header{
 display:flex;
 align-items:center;
 gap:8px;
-margin-bottom:4px;
+margin-bottom:5px;
 }
 
 .msg-header img{
@@ -156,19 +161,28 @@ height:22px;
 border-radius:50%;
 }
 
+.meta{
+font-size:11px;
+opacity:.7;
+display:flex;
+justify-content:space-between;
+margin-top:5px;
+}
+
+/* INPUT */
 .input-box{
 display:flex;
-padding:12px;
+gap:10px;
+padding:10px;
 background:#fff;
 border-top:1px solid #e5e7eb;
-gap:10px;
 }
 
 input{
 flex:1;
 padding:10px;
-border-radius:10px;
 border:1px solid #e5e7eb;
+border-radius:10px;
 outline:none;
 }
 
@@ -176,38 +190,41 @@ button{
 background:#111827;
 color:#fff;
 border:none;
-padding:10px 14px;
+padding:10px 12px;
 border-radius:10px;
 cursor:pointer;
 }
 
-.seen{
-font-size:10px;
-opacity:.8;
-margin-left:5px;
+/* REACTIONS */
+.reactions{
+display:flex;
+gap:8px;
+margin-top:6px;
+font-size:16px;
 }
 
+.react{
+cursor:pointer;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.sidebar{
+display:none;
+}
+}
+
+/* POPUP */
 .popup{
 position:fixed;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 background:#fff;
-padding:16px;
+padding:15px;
 border-radius:12px;
+display:none;
 box-shadow:0 10px 30px rgba(0,0,0,.2);
-display:none;
-min-width:220px;
-}
-
-.popup h4{
-margin-bottom:10px;
-}
-
-@media(max-width:768px){
-.sidebar{
-display:none;
-}
 }
 
 </style>
@@ -219,7 +236,7 @@ display:none;
 
 <div class="user">
 <img id="profilePic">
-<div class="user-info">
+<div>
 <div>
 <span id="name"></span>
 <span class="club-tag" id="clubTag"></span>
@@ -228,29 +245,28 @@ display:none;
 </div>
 </div>
 
-<div>
-<i class="fa-solid fa-users"></i>
-<span id="onlineCount">0</span>
-</div>
+<div><i class="fa fa-users"></i> <span id="online">0</span></div>
 
-<button class="logout" id="logoutBtn">Logout</button>
+<button onclick="logout()">Logout</button>
 
 </div>
 
 <div class="container">
 
+<!-- SIDEBAR -->
 <div class="sidebar">
 
-<div class="room active" onclick="switchRoom('general')">
-General Chat
+<div class="room active" onclick="switchRoom(event,'general')">General</div>
+<div class="room" onclick="switchRoom(event,'team')">Team Chat</div>
+
+<div class="players">
+<h4>Players</h4>
+<div id="playersList"></div>
 </div>
 
-<div class="room" onclick="switchRoom('team')">
-Team Chat
 </div>
 
-</div>
-
+<!-- CHAT -->
 <div class="chat">
 
 <div class="messages" id="messages"></div>
@@ -264,10 +280,7 @@ Team Chat
 
 </div>
 
-<div class="popup" id="popup">
-<h4>Seen By</h4>
-<div id="seenList"></div>
-</div>
+<div class="popup" id="popup"></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -276,154 +289,150 @@ Team Chat
 <script>
 
 firebase.initializeApp({
-apiKey:"AIzaSyC9tqDdyuIbdgWIBcwwGB7uax0ci_AlrSE",
-authDomain:"discussions-636e5.firebaseapp.com",
-databaseURL:"https://discussions-636e5-default-rtdb.firebaseio.com",
-projectId:"discussions-636e5",
-storageBucket:"discussions-636e5.firebasestorage.app",
-messagingSenderId:"3981476762",
-appId:"1:3981476762:web:b3cb0f505367758a52b023"
+apiKey: "AIzaSyC9tqDdyuIbdgWIBcwwGB7uax0ci_AlrSE",
+authDomain: "discussions-636e5.firebaseapp.com",
+databaseURL: "https://discussions-636e5-default-rtdb.firebaseio.com",
+projectId: "discussions-636e5",
+storageBucket: "discussions-636e5.firebasestorage.app",
+messagingSenderId: "3981476762",
+appId: "1:3981476762:web:b3cb0f505367758a52b023",
+measurementId: "G-FB1S4XN3GS"
 });
 
 const auth = firebase.auth();
 const db = firebase.database();
 
-let currentUser = null;
-let currentRoom = "general";
-let userData = {};
+let user, data, room="general";
 
-const messagesDiv = document.getElementById("messages");
+const msgBox=document.getElementById("messages");
 
-auth.onAuthStateChanged(async user => {
+auth.onAuthStateChanged(async u=>{
 
-if(!user){
-location.href="index.html";
-return;
-}
+if(!u)location="index.html";
 
-currentUser = user;
+user=u;
 
-const snap = await db.ref("users-register/"+user.uid).once("value");
-userData = snap.val();
+let snap=await db.ref("users-register/"+u.uid).once("value");
+data=snap.val();
 
-document.getElementById("name").innerText = userData.name;
-document.getElementById("email").innerText = userData.email;
-document.getElementById("clubTag").innerText = userData.favoriteTeam;
-document.getElementById("profilePic").src = userData.photoURL;
+document.getElementById("name").innerText=data.name;
+document.getElementById("email").innerText=data.email;
+document.getElementById("clubTag").innerText=data.favoriteTeam;
+document.getElementById("profilePic").src=data.photoURL;
 
-listenMessages();
+loadPlayers(data.favoriteTeam);
+listen();
 
 });
 
 function roomPath(){
-return currentRoom==="general"
-? "chats/general/messages"
-: "chats/team/"+userData.favoriteTeam+"/messages";
+return room==="general"
+?"chats/general/messages"
+:"chats/team/"+data.favoriteTeam+"/messages";
 }
 
-function switchRoom(type){
-
-currentRoom = type;
-
-document.querySelectorAll(".room").forEach(r=>r.classList.remove("active"));
-event.target.classList.add("active");
-
-messagesDiv.innerHTML="";
-listenMessages();
-
+function switchRoom(e,r){
+room=r;
+document.querySelectorAll(".room").forEach(x=>x.classList.remove("active"));
+e.target.classList.add("active");
+msgBox.innerHTML="";
+listen();
 }
 
-function listenMessages(){
-
+function listen(){
 db.ref(roomPath()).off();
+db.ref(roomPath()).on("child_added",s=>{
+render(s.val(),s.key);
+});
+}
 
-db.ref(roomPath()).on("child_added", snap=>{
+function render(m,k){
 
-const msg = snap.val();
-renderMessage(msg, snap.key);
+let div=document.createElement("div");
+div.className="msg "+(m.uid===user.uid?"me":"");
+
+div.innerHTML=`
+<div class="msg-header">
+<img src="${m.photo}">
+<strong>${m.name}</strong>
+</div>
+<div>${m.text}</div>
+
+<div class="reactions">
+<span class="react" onclick="react('${k}','❤️')">❤️</span>
+<span class="react" onclick="react('${k}','👍')">👍</span>
+<span class="react" onclick="react('${k}','😂')">😂</span>
+<span class="react" onclick="react('${k}','😡')">😡</span>
+</div>
+
+<div class="meta">
+<span>${m.time}</span>
+<span>${(m.reactions||[]).length}</span>
+</div>
+`;
+
+msgBox.appendChild(div);
+msgBox.scrollTop=msgBox.scrollHeight;
+}
+
+function sendMsg(){
+
+let text=document.getElementById("msgInput").value;
+if(!text)return;
+
+db.ref(roomPath()).push({
+uid:user.uid,
+name:data.name,
+photo:data.photoURL,
+text,
+time:new Date().toLocaleTimeString(),
+reactions:[]
+});
+
+document.getElementById("msgInput").value="";
+}
+
+function react(id,type){
+
+db.ref(roomPath()+"/"+id).once("value",s=>{
+
+let m=s.val();
+m.reactions=m.reactions||[];
+m.reactions.push(type);
+
+db.ref(roomPath()+"/"+id).update({reactions:m.reactions});
 
 });
 
 }
 
-function renderMessage(msg,key){
+/* Wikipedia Players */
+async function loadPlayers(team){
 
-const div = document.createElement("div");
-div.className="msg "+(msg.uid===currentUser.uid?"me":"");
+let url=`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(team+" football players")}`;
 
-div.onclick=()=>showSeen(msg);
+try{
+let res=await fetch(url);
+let d=await res.json();
 
-div.innerHTML=`
-<div class="msg-header">
-<img src="${msg.photo}">
-<strong>${msg.name}</strong>
-</div>
-<div>${msg.text}</div>
-<div class="meta">
-<span>${msg.time}</span>
-<span class="seen">${msg.seenBy?msg.seenBy.length:0} seen</span>
+document.getElementById("playersList").innerHTML=
+`
+<div class="player">
+<img src="${d.thumbnail?.source || ''}">
+<div>${d.title}</div>
 </div>
 `;
 
-messagesDiv.appendChild(div);
-messagesDiv.scrollTop=messagesDiv.scrollHeight;
-
-markSeen(key,msg);
-
-}
-
-function sendMsg(){
-
-const input=document.getElementById("msgInput");
-
-if(!input.value.trim())return;
-
-const msg={
-uid:currentUser.uid,
-name:userData.name+(currentRoom==="general"?" ("+userData.favoriteTeam+")":""),
-photo:userData.photoURL,
-text:input.value,
-time:new Date().toLocaleTimeString(),
-seenBy:[currentUser.uid]
-};
-
-db.ref(roomPath()).push(msg);
-
-input.value="";
-
-}
-
-function markSeen(key,msg){
-
-if(!msg.seenBy)msg.seenBy=[];
-
-if(!msg.seenBy.includes(currentUser.uid)){
-
-msg.seenBy.push(currentUser.uid);
-
-db.ref(roomPath()+"/"+key).update({seenBy:msg.seenBy});
-
+}catch(e){
+console.log(e);
 }
 
 }
 
-function showSeen(msg){
-
-document.getElementById("popup").style.display="block";
-
-document.getElementById("seenList").innerHTML=
-(msg.seenBy||[]).map(u=>`<div>${u}</div>`).join("");
-
-setTimeout(()=>{
-document.getElementById("popup").style.display="none";
-},3000);
-
+function logout(){
+auth.signOut();
+location="index.html";
 }
-
-document.getElementById("logoutBtn").onclick=async()=>{
-await auth.signOut();
-location.href="index.html";
-};
 
 </script>
 
