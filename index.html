@@ -457,38 +457,23 @@ const teamSelect = document.getElementById("teamSelect");
 const errorBox = document.getElementById("errorBox");
 const successBox = document.getElementById("successBox");
 
-function showError(message) {
+let loggingIn = false;
 
+function showError(msg) {
 errorBox.style.display = "block";
-errorBox.innerText = message;
-
+errorBox.innerText = msg;
 successBox.style.display = "none";
-
 }
 
-function showSuccess(message) {
-
+function showSuccess(msg) {
 successBox.style.display = "block";
-successBox.innerText = message;
-
+successBox.innerText = msg;
 errorBox.style.display = "none";
-
 }
 
 function setLoading(state) {
-
-if (state) {
-
-loginBtn.disabled = true;
-btnText.innerHTML = `<div class="spinner"></div>`;
-
-} else {
-
-loginBtn.disabled = false;
-btnText.innerHTML = `Continue with Google`;
-
-}
-
+loginBtn.disabled = state;
+btnText.innerHTML = state ? `<div class="spinner"></div>` : `Continue with Google`;
 }
 
 loginBtn.addEventListener("click", async () => {
@@ -500,15 +485,20 @@ showError("Please choose your favorite club.");
 return;
 }
 
+setLoading(true);
 errorBox.style.display = "none";
 successBox.style.display = "none";
 
-setLoading(true);
+loggingIn = true;
 
 try {
 
 const result = await auth.signInWithPopup(provider);
 const user = result.user;
+
+const userRef = db.ref("users-register/" + user.uid);
+
+const snapshot = await userRef.once("value");
 
 const userData = {
 name: user.displayName || "",
@@ -519,26 +509,26 @@ favoriteTeam: selectedTeam,
 lastLogin: Date.now()
 };
 
-const snapshot = await db.ref("users-register/" + user.uid).once("value");
-
 if (snapshot.exists()) {
 
-await db.ref("users-register/" + user.uid).update({
+await userRef.update({
 lastLogin: Date.now()
 });
 
 showSuccess("Welcome back! Redirecting...");
 
 } else {
-await db.ref("users-register/" + user.uid).set(userData);
+
+await userRef.set(userData);
 
 showSuccess("Login successful. Redirecting...");
 
 }
 
 setTimeout(() => {
+loggingIn = false;
 window.location.href = "home.html";
-}, 1000);
+}, 1200);
 
 } catch (error) {
 
@@ -556,6 +546,7 @@ message = "Another popup request is already running.";
 
 showError(message);
 setLoading(false);
+loggingIn = false;
 
 }
 
@@ -563,7 +554,7 @@ setLoading(false);
 
 auth.onAuthStateChanged(user => {
 
-if (user) {
+if (user && !loggingIn) {
 window.location.href = "home.html";
 }
 
